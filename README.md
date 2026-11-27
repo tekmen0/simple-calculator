@@ -30,6 +30,16 @@ npm run dev
 
 Open `http://localhost:5173`. Vite forwards requests under `/api` to the Go server so the browser can use relative URLs during development.
 
+### Run with Docker
+
+From the repository root, build and start both services with Docker Compose.
+
+```sh
+docker compose up --build
+```
+
+Open `http://localhost:8088`. Nginx serves the React build and forwards `/api` to the Go container. To stop the stack, press Ctrl+C or run `docker compose down`.
+
 ### Production build
 
 Run `npm run build` from `frontend/` to type-check the project and build `frontend/dist/`. Serve those files over HTTPS and route `/api` on the same origin to the Go backend. The browser's relative `fetch` URLs use HTTPS when the page is served over HTTPS.
@@ -87,7 +97,7 @@ The response has status `422` with a stable error code and a human-readable mess
 - **The frontend API client builds requests.** `calculate()` sends the shared JSON POST with browser `fetch` and validates the response at runtime. Client generation would add a schema and build step for one frontend consumer. A shared `fetch` wrapper would make sense if several frontend calls needed the same authentication headers or timeout policy.
 - **Numbers use binary floating point.** Go `float64` and JavaScript `number` support fractions with ordinary JSON numbers. Results can round, as in `0.1 + 0.2 = 0.30000000000000004`. Exact decimal arithmetic would require an explicit precision and rounding policy in both projects.
 - **Same-origin serving.** Vite proxies `/api` to Go over local HTTP. In production, the host manages TLS and routes `/api` on the frontend's HTTPS origin. Both setups use the same relative URLs. Separate origins would add CORS configuration, and local HTTPS would add certificate setup.
-- **Direct local setup.** Go and npm launch the two processes using the project's existing toolchains. Docker would add image and container configuration in exchange for a single launch command.
+- **Direct local setup.** Go and npm launch the two processes using the project's existing toolchains. Docker Compose builds and starts both services with one command.
 - **Built-in code checks.** Strict TypeScript and behavior tests cover the single-form frontend. The backend uses `go vet` for static analysis and `gofmt` for formatting. If the frontend grows to use effects or custom hooks, ESLint with React's Hooks rules can catch conditional hook calls and missing dependencies. [Rules of Hooks](https://react.dev/reference/eslint-plugin-react-hooks/lints/rules-of-hooks) · [Dependency checks](https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps)
 
 ## Testing and coverage
@@ -97,6 +107,14 @@ Go tests live under `backend/tests/`, grouped by the package they exercise. Reac
 Table-driven Go tests cover arithmetic and edge cases. `httptest` checks request validation, status codes, and response bodies through the real handler. Vitest and React Testing Library cover calculation submissions, input validation, pending state, and service errors. The API client tests cover request formatting and response validation.
 
 Each automated suite runs independently. A browser smoke check exercises the running Vite and Go processes together. A dedicated browser suite would add browser setup and server lifecycle management for the single calculation workflow.
+
+### Coverage summary
+
+| Project | Metric | Coverage |
+| --- | --- | ---: |
+| Go backend | Statements | 91.1% |
+| React frontend | Lines | 98.33% |
+| React frontend | Branches | 94.91% |
 
 From `backend/`, run the Go tests, print coverage, run static analysis, and list any files that need formatting. The `-coverpkg` flag measures coverage in the implementation packages exercised by the separate test packages.
 

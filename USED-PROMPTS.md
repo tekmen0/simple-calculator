@@ -40,5 +40,9 @@ Propose init commands for each repo & libraries to be used.
 
 
 
-#### 4 - Docs verification : 
 
+
+
+
+#### 4 - Post Edits : 
+Separate tests to a different dedicated test directory under same paths.
