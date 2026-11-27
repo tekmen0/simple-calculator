@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { calculate } from "./calculator-api";
+import { calculate } from "../src/calculator-api";
 
 const fetchMock = vi.fn<typeof fetch>();
 

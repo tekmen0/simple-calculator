@@ -92,18 +92,22 @@ The response has status `422` with a stable error code and a human-readable mess
 
 ## Testing and coverage
 
+Go tests live under `backend/tests/`, grouped by the package they exercise. React and TypeScript tests live under `frontend/tests/`.
+
 Table-driven Go tests cover arithmetic and edge cases. `httptest` checks request validation, status codes, and response bodies through the real handler. Vitest and React Testing Library cover calculation submissions, input validation, pending state, and service errors. The API client tests cover request formatting and response validation.
 
 Each automated suite runs independently. A browser smoke check exercises the running Vite and Go processes together. A dedicated browser suite would add browser setup and server lifecycle management for the single calculation workflow.
 
-From `backend/`, run the Go tests, print coverage, run static analysis, and list any files that need formatting.
+From `backend/`, run the Go tests, print coverage, run static analysis, and list any files that need formatting. The `-coverpkg` flag measures coverage in the implementation packages exercised by the separate test packages.
 
 ```sh
-go test -coverprofile=coverage.out ./...
+go test -coverpkg=./... -coverprofile=coverage.out ./...
 go tool cover -func=coverage.out
 go vet ./...
 gofmt -l .
 ```
+
+The `total` line from `go tool cover` shows the combined coverage across the Go test suites.
 
 Run the frontend tests, generate coverage, and check types from `frontend/`.
 
