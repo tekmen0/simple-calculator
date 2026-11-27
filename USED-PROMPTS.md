@@ -26,12 +26,14 @@ Propose init commands for each repo & libraries to be used.
 
 
 #### 2 - Implementation (Backend) : 
-Given our design decisions at README.md & using available idiomatic golang skills implement the backend of the project. Which should be extendable to the tasks described in TASK.md.
+1. Given our design decisions at README.md & using available idiomatic golang skills implement the backend of the project. Which should be extendable to the tasks described in TASK.md.
 
+2. Implement the request logging middleware as well.
 
 
 #### 3 - Implementation (Frontend) : 
 1. Given our design decisions at README.md & using available typescript skills, implement the simple fronted of the project. Which should be extendable to the tasks described in TASK.md. Add tests, vite form & https connections with browser fetch.
+
 
 2. Update the ui, we select the operation from the dropdown between the first & second operands for more intuitive design which resemble to drawing operation on paper from left to right. And show the latest operation + result in the resulting box. Not only the result. For example, if i calculate 65 + 35, result container should show : 
 65 + 35 = 100 instead of 100.

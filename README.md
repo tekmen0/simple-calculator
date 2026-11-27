@@ -85,6 +85,7 @@ The response has status `422` with a stable error code and a human-readable mess
 - **React owns the interaction.** A single form keeps input and submission state local. It validates input for immediate feedback and displays the server result. A small TypeScript API client uses simple browser `fetch` and validates responses at runtime. Plain CSS supports narrow screens.
 - **Numbers use binary floating point.** Go uses `float64` and the browser uses JavaScript `number`. This keeps the JSON contract simple and supports fractional inputs. Values such as `0.1` are approximate, so `0.1 + 0.2` can return `0.30000000000000004`.
 - **KISS** This project didn't use pnpm, Gin or other extra libraries to keep the set-up simple and don't overkill the problem at hand.
+- **Simple handler** For now, the requrirements are simple enough to keep the handler in the same file. In the future, if api & endpoints grow we could create separate files for middlewares, routes.
 
 ## Testing and coverage
 

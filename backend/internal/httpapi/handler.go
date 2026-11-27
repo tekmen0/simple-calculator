@@ -43,7 +43,7 @@ func NewHandler() http.Handler {
 	mux.HandleFunc("/api/calculations/{operation}", handleCalculation)
 	mux.HandleFunc("/", notFound)
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Keep the API's JSON 404 for paths that ServeMux would redirect.
 		if path.Clean(r.URL.Path) != r.URL.Path {
 			notFound(w, r)
@@ -51,6 +51,7 @@ func NewHandler() http.Handler {
 		}
 		mux.ServeHTTP(w, r)
 	})
+	return http.MaxBytesHandler(logRequests(handler), maxRequestBytes)
 }
 
 func handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +81,7 @@ func handleCalculation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, maxRequestBytes))
+	body, err := io.ReadAll(r.Body)
 	if _, ok := errors.AsType[*http.MaxBytesError](err); ok {
 		writeError(w, http.StatusRequestEntityTooLarge, "request_too_large", "Request body is too large.")
 		return
