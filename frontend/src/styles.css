@@ -1,0 +1,151 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #201b32;
+  background: #f4f2fa;
+  color-scheme: light;
+  --accent: #5635b5;
+  --border: #d6cfe3;
+  --error: #a02234;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  padding: clamp(1rem, 5vw, 3rem);
+  background: radial-gradient(ellipse at top, #eae1ff, transparent 45rem);
+}
+
+#root {
+  width: min(100%, 36rem);
+  min-width: 0;
+}
+
+.calculator {
+  padding: clamp(1rem, 5vw, 2.25rem);
+  border: 1px solid #e5deef;
+  border-radius: 1.5rem;
+  background: #fff;
+  box-shadow: 0 1rem 3rem #34205514;
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  letter-spacing: -0.045em;
+}
+
+form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.result {
+  min-height: 7rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  background: #231747;
+  color: #fff;
+}
+
+.result > span {
+  color: #e0d4fd;
+}
+
+.result-value {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: clamp(1.25rem, 5vw, 2.25rem);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.result [role="alert"] {
+  margin: 0.5rem 0 0;
+  color: #ffd2d9;
+}
+
+.expression {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.625rem;
+}
+
+.expression-field {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+
+.expression-field > label {
+  font-weight: 600;
+}
+
+.expression-field input,
+.expression-field select,
+button {
+  min-width: 0;
+  min-height: 2.875rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font: inherit;
+}
+
+.expression-field input {
+  background: #fff;
+  color: inherit;
+}
+
+.expression-field select {
+  background: #f0eaff;
+  color: #44268f;
+  cursor: pointer;
+}
+
+.expression-field input[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.field-error {
+  margin: 0;
+  color: var(--error);
+  font-size: 0.875rem;
+}
+
+button {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+button:hover:enabled {
+  background: #452796;
+}
+
+button:disabled,
+.expression-field input:disabled,
+.expression-field select:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 26rem) {
+  .expression {
+    grid-template-columns: 1fr;
+  }
+}

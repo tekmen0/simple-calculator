@@ -79,17 +79,21 @@ The response has status `422` with a stable error code and a human-readable mess
 
 ## Design decisions
 
-- **One repository, two projects.** This was asked by the Task deliverables, not our choice. This allow for simpler management & ci/cd operations. But bad for CI/CD, increasing the complexity of management of versions, and blast radius.
-- **Arithmetic has one entry point.** A pure `Calculate` function in `backend/internal/calculator` owns dispatch and arithmetic errors. This allows shared interface for tests. 
-`backend/internal/httpapi` owns JSON decoding and translates domain errors to HTTP responses. The four operation URLs share one handler. Each request is stateless.
-- **React owns the interaction.** A single form keeps input and submission state local. It validates input for immediate feedback and displays the server result. A small TypeScript API client uses simple browser `fetch` and validates responses at runtime. Plain CSS supports narrow screens.
-- **Numbers use binary floating point.** Go uses `float64` and the browser uses JavaScript `number`. This keeps the JSON contract simple and supports fractional inputs. Values such as `0.1` are approximate, so `0.1 + 0.2` can return `0.30000000000000004`.
-- **KISS** This project didn't use pnpm, Gin or other extra libraries to keep the set-up simple and don't overkill the problem at hand.
-- **Simple handler** For now, the requrirements are simple enough to keep the handler in the same file. In the future, if api & endpoints grow we could create separate files for middlewares, routes.
+- **One repository, two projects.** Go and React have separate build and test commands. Keeping them in one repository lets a change to the JSON contract update the handler, client, and examples in the same commit.
+- **Four operations share one contract.** Addition, subtraction, multiplication, and division all fit the same two-input form and JSON request. The assignment treats exponentiation, square root, and percentage as optional. These would add UI and validation cases, including a single-operand form and request for square root.
+- **Stateless arithmetic.** The pure `Calculate` function in `backend/internal/calculator` owns dispatch and arithmetic errors. Each request supplies both operands. The browser displays the latest equation, and a feature like history synced across devices would introduce persistent storage and user identity.
+- **Standard-library routing, validation, and logging.** `backend/internal/httpapi` uses `net/http` and `encoding/json` for the health and calculation routes, request validation, and JSON errors. One handler serves all four operations. Request logging uses a small `slog` middleware because it applies across routes. A routing framework or schema library would add a dependency for a small, fixed API.
+- **Local form state and native controls.** One React form owns the operands, selected operation, and submission state. A global store or form library would add wiring for state used in one place. Native controls provide keyboard interaction, and plain CSS handles the responsive layout.
+- **The frontend API client builds requests.** `calculate()` sends the shared JSON POST with browser `fetch` and validates the response at runtime. Client generation would add a schema and build step for one frontend consumer. A shared `fetch` wrapper would make sense if several frontend calls needed the same authentication headers or timeout policy.
+- **Numbers use binary floating point.** Go `float64` and JavaScript `number` support fractions with ordinary JSON numbers. Results can round, as in `0.1 + 0.2 = 0.30000000000000004`. Exact decimal arithmetic would require an explicit precision and rounding policy in both projects.
+- **Same-origin serving.** Vite proxies `/api` to Go over local HTTP. In production, the host manages TLS and routes `/api` on the frontend's HTTPS origin. Both setups use the same relative URLs. Separate origins would add CORS configuration, and local HTTPS would add certificate setup.
+- **Direct local setup.** Go and npm launch the two processes using the project's existing toolchains. Docker would add image and container configuration in exchange for a single launch command.
 
 ## Testing and coverage
 
 Table-driven Go tests cover arithmetic and edge cases. `httptest` checks request validation, status codes, and response bodies through the real handler. Vitest and React Testing Library cover calculation submissions, input validation, pending state, and service errors. The API client tests cover request formatting and response validation.
+
+Each automated suite runs independently. A browser smoke check exercises the running Vite and Go processes together. A dedicated browser suite would add browser setup and server lifecycle management for the single calculation workflow.
 
 Run the Go tests and print the coverage summary from `backend/`.
 
