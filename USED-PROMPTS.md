@@ -45,4 +45,5 @@ Propose init commands for each repo & libraries to be used.
 
 
 #### 4 - Post Edits : 
-Separate tests to a different dedicated test directory under same paths.
+1. Separate tests to a different dedicated test directory under same paths.
+2. Wouldn't our code be more maintainable if we separate validation? If so implement it.
