@@ -1,0 +1,12 @@
+tmp_dir = "bin"
+
+[build]
+cmd = "go build -o ./bin/calculator-dev ."
+entrypoint = ["./bin/calculator-dev"]
+include_ext = ["go"]
+exclude_dir = ["bin"]
+exclude_regex = ['_test\.go$']
+
+[build.windows]
+cmd = "go build -o ./bin/calculator-dev.exe ."
+entrypoint = ["bin\\calculator-dev.exe"]

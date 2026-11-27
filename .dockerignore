@@ -1,0 +1,8 @@
+.git
+TASK.md
+backend/bin
+**/node_modules
+**/dist
+**/coverage
+**/coverage.out
+**/.env*

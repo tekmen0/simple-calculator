@@ -32,3 +32,49 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+go.work.sum
+backend/bin/
+
+# Node.js / React
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+*.local
+
+# Test coverage
+coverage/
+coverage.out
+coverage.html
+playwright-report/
+test-results/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# IDE
+.idea/
+.vscode/
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+TASK.md
