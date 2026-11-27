@@ -12,12 +12,14 @@ npm --prefix frontend ci
 
 The backend uses the Go standard library.
 
-Once the application code is in place, start Go on port `8080` in one terminal.
+Start the Go API on port `8080` in one terminal. Air rebuilds and restarts the API when you save a Go application source file.
 
 ```sh
 cd backend
-go run .
+go run github.com/air-verse/air@v1.67.4
 ```
+
+For a one-off run, use `go run .` from `backend/`.
 
 From the repository root in a second terminal, start Vite.
 
@@ -28,7 +30,21 @@ npm run dev
 
 Open `http://localhost:5173`. Vite forwards requests under `/api` to the Go server so the browser can use relative URLs during development.
 
+### Production build
+
+Run `npm run build` from `frontend/` to type-check the project and build `frontend/dist/`. Serve those files over HTTPS and route `/api` on the same origin to the Go backend. The browser's relative `fetch` URLs use HTTPS when the page is served over HTTPS.
+
 ## API usage
+
+### Health check
+
+`GET /api/health` returns `200 OK` with `{"status":"ok"}` when the API is running. `HEAD /api/health` returns the same status without a response body.
+
+```sh
+curl -i http://localhost:8080/api/health
+```
+
+### Calculations
 
 Send `POST /api/calculations/{operation}` with `Content-Type: application/json`. The supported operations are `add`, `subtract`, `multiply`, and `divide`. Use finite JSON numbers for `left` (the first operand) and `right` (the second operand).
 
@@ -54,10 +70,10 @@ The response has status `422` with a stable error code and a human-readable mess
 
 | Status | Error code | Cause |
 | --- | --- | --- |
-| `400` | `invalid_request` | Invalid JSON or fields, including missing operands, `null`, numeric strings, unknown fields, or trailing JSON values |
+| `400` | `invalid_request` | Invalid JSON or fields, including missing operands, `null`, numeric strings, numbers that overflow `float64`, unknown or duplicate fields, or trailing JSON values |
 | `404` | `not_found` | Unknown API path or operation |
 | `405` | `method_not_allowed` | A supported operation was called with another method. The response includes `Allow: POST`. |
-| `413` | `request_too_large` | The request body exceeds the size limit |
+| `413` | `request_too_large` | The request body exceeds 4 KiB |
 | `415` | `unsupported_media_type` | The request lacks an `application/json` content type |
 | `422` | `division_by_zero`, `result_out_of_range` | Division by either sign of zero or arithmetic overflow |
 
@@ -72,7 +88,7 @@ The response has status `422` with a stable error code and a human-readable mess
 
 ## Testing and coverage
 
-Table-driven Go tests will cover arithmetic and edge cases. `httptest` will check request validation, status codes, and response bodies through the real handler. Vitest and React Testing Library will exercise the form and API client. A browser smoke test will check the two running projects together at desktop and narrow widths.
+Table-driven Go tests cover arithmetic and edge cases. `httptest` checks request validation, status codes, and response bodies through the real handler. Vitest and React Testing Library cover calculation submissions, input validation, pending state, and service errors. The API client tests cover request formatting and response validation.
 
 Run the Go tests and print the coverage summary from `backend/`.
 
@@ -81,11 +97,14 @@ go test -coverprofile=coverage.out ./...
 go tool cover -func=coverage.out
 ```
 
-Run the frontend tests with coverage from `frontend/`.
+Run the frontend tests and generate the coverage report from `frontend/`.
 
 ```sh
-npm exec -- vitest run --coverage
+npm test
+npm run coverage
 ```
+
+Open `frontend/coverage/index.html` for the HTML report.
 
 ## AI prompts
 
