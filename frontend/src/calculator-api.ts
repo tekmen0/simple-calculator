@@ -27,6 +27,7 @@ export async function calculate(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(operands),
+      signal: AbortSignal.timeout(5_000),
     });
   } catch {
     return {

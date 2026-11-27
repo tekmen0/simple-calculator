@@ -26,6 +26,7 @@ describe("calculate", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: '{"left":-1.25,"right":4}',
+        signal: expect.any(AbortSignal),
       });
     },
   );
