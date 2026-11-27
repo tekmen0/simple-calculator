@@ -16,3 +16,4 @@
 
 - Co-locate tests with their code. Use table-driven Go tests for arithmetic, `httptest` for HTTP behavior, and Vitest with React Testing Library for form behavior. Assert results and errors through public interfaces.
 - Keep the Go handler, TypeScript client, and README API examples in sync when the wire contract changes.
+- Always run the tests & linters after your each change.
