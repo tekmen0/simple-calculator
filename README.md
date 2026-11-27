@@ -40,6 +40,8 @@ docker compose up --build
 
 Open `http://localhost:8088`. Nginx serves the React build and forwards `/api` to the Go container. To stop the stack, press Ctrl+C or run `docker compose down`.
 
+Compose waits for the backend's `/api/health` probe to pass before starting Nginx. On shutdown, Go stops accepting new connections and gives active requests up to 15 seconds to finish. Compose gives the backend 20 seconds before forcing it to stop.
+
 ### Production build
 
 Run `npm run build` from `frontend/` to type-check the project and build `frontend/dist/`. Serve those files over HTTPS and route `/api` on the same origin to the Go backend. The browser's relative `fetch` URLs use HTTPS when the page is served over HTTPS.
@@ -93,6 +95,7 @@ The response has status `422` with a stable error code and a human-readable mess
 - **Four operations share one contract.** Addition, subtraction, multiplication, and division all fit the same two-input form and JSON request. The assignment treats exponentiation, square root, and percentage as optional. These would add UI and validation cases, including a single-operand form and request for square root.
 - **Stateless arithmetic.** The pure `Calculate` function in `backend/internal/calculator` owns dispatch and arithmetic errors. Each request supplies both operands. The browser displays the latest equation, and a feature like history synced across devices would introduce persistent storage and user identity.
 - **Standard-library routing, validation, and logging.** `backend/internal/httpapi` uses `net/http` and `encoding/json` for the health and calculation routes, request validation, and JSON errors. One handler serves all four operations. Request logging uses a small `slog` middleware because it applies across routes. A routing framework or schema library would add a dependency for a small, fixed API.
+- **Rate limiting is deferred.** Each calculation is a small, stateless operation, and Docker Compose exposes the app only on localhost. Go enforces a 4 KiB request body limit and server timeouts. If the app is deployed publicly, the reverse proxy can rate-limit calculation requests before they reach Go.
 - **Local form state and native controls.** One React form owns the operands, selected operation, and submission state. A global store or form library would add wiring for state used in one place. Native controls provide keyboard interaction, and plain CSS handles the responsive layout.
 - **The frontend API client builds requests.** `calculate()` sends the shared JSON POST with browser `fetch` and validates the response at runtime. Client generation would add a schema and build step for one frontend consumer. A shared `fetch` wrapper would make sense if several frontend calls needed the same authentication headers or timeout policy.
 - **Numbers use binary floating point.** Go `float64` and JavaScript `number` support fractions with ordinary JSON numbers. Results can round, as in `0.1 + 0.2 = 0.30000000000000004`. Exact decimal arithmetic would require an explicit precision and rounding policy in both projects.
@@ -107,6 +110,8 @@ Go tests live under `backend/tests/`, grouped by the package they exercise. Reac
 Table-driven Go tests cover arithmetic and edge cases. `httptest` checks request validation, status codes, and response bodies through the real handler. Vitest and React Testing Library cover calculation submissions, input validation, pending state, and service errors. The API client tests cover request formatting and response validation.
 
 Each automated suite runs independently. A browser smoke check exercises the running Vite and Go processes together. A dedicated browser suite would add browser setup and server lifecycle management for the single calculation workflow.
+
+GitHub Actions runs Go tests, `go vet`, and `gofmt` checks, plus frontend tests and the type-checked production build, on pull requests and pushes to `main` or `staging`.
 
 ### Coverage summary
 

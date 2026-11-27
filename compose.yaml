@@ -3,13 +3,19 @@ services:
     build:
       context: .
       target: backend
+    healthcheck:
+      test: ["CMD", "/calculator", "-healthcheck"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    stop_grace_period: 20s
   frontend:
     build:
       context: .
       target: frontend
     depends_on:
       backend:
-        condition: service_started
+        condition: service_healthy
         restart: true
     ports:
       - "127.0.0.1:8088:80"
