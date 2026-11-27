@@ -88,6 +88,7 @@ The response has status `422` with a stable error code and a human-readable mess
 - **Numbers use binary floating point.** Go `float64` and JavaScript `number` support fractions with ordinary JSON numbers. Results can round, as in `0.1 + 0.2 = 0.30000000000000004`. Exact decimal arithmetic would require an explicit precision and rounding policy in both projects.
 - **Same-origin serving.** Vite proxies `/api` to Go over local HTTP. In production, the host manages TLS and routes `/api` on the frontend's HTTPS origin. Both setups use the same relative URLs. Separate origins would add CORS configuration, and local HTTPS would add certificate setup.
 - **Direct local setup.** Go and npm launch the two processes using the project's existing toolchains. Docker would add image and container configuration in exchange for a single launch command.
+- **Built-in code checks.** Strict TypeScript and behavior tests cover the single-form frontend. The backend uses `go vet` for static analysis and `gofmt` for formatting. If the frontend grows to use effects or custom hooks, ESLint with React's Hooks rules can catch conditional hook calls and missing dependencies. [Rules of Hooks](https://react.dev/reference/eslint-plugin-react-hooks/lints/rules-of-hooks) · [Dependency checks](https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps)
 
 ## Testing and coverage
 
@@ -95,18 +96,21 @@ Table-driven Go tests cover arithmetic and edge cases. `httptest` checks request
 
 Each automated suite runs independently. A browser smoke check exercises the running Vite and Go processes together. A dedicated browser suite would add browser setup and server lifecycle management for the single calculation workflow.
 
-Run the Go tests and print the coverage summary from `backend/`.
+From `backend/`, run the Go tests, print coverage, run static analysis, and list any files that need formatting.
 
 ```sh
 go test -coverprofile=coverage.out ./...
 go tool cover -func=coverage.out
+go vet ./...
+gofmt -l .
 ```
 
-Run the frontend tests and generate the coverage report from `frontend/`.
+Run the frontend tests, generate coverage, and check types from `frontend/`.
 
 ```sh
 npm test
 npm run coverage
+npm exec -- tsc --noEmit
 ```
 
 Open `frontend/coverage/index.html` for the HTML report.
